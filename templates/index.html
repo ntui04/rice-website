@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rice Disease Prediction</title>
+    <style>
+        /* Reset some default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #ffffff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 50px 20px;
+        }
+
+        h1 {
+            color: #2e7d32;
+            margin-bottom: 30px;
+            font-size: 36px;
+        }
+
+        .upload-section {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 25px;
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1b5e20;
+        }
+
+        #preview img {
+            max-width: 300px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .result {
+            margin-top: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #d84315;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Rice Leaf Disease Classifier </h1>
+
+    <div class="upload-section">
+        <input type="file" id="fileInput">
+        <br>
+        <button onclick="uploadImage()">Predict</button>
+
+        <div id="preview"></div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select an image first.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('preview').innerHTML = `<img src="${e.target.result}" alt="Image Preview"/>`;
+            }
+            reader.readAsDataURL(file);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = `Prediction: ${data.class} <br> Confidence: ${data.confidence}%`;
+            })
+            .catch(error => {
+                console.error(error);
+                alert("Something went wrong during prediction.");
+            });
+        }
+    </script>
+
+</body>
+</html>
