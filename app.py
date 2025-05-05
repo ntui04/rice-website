@@ -195,5 +195,5 @@ async def predict(file: UploadFile = File(...)):
             detail=f"An error occurred while processing the image: {str(e)}"
         )
     
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+if __name__ == '__main__':
+    uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)
